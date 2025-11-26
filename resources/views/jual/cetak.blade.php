@@ -1,215 +1,112 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Cetak Transaksi</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-            border-bottom: 3px double #000;
-            padding-bottom: 15px;
-        }
-        .header h1 {
-            margin: 0;
-            font-size: 28px;
-            color: #2c3e50;
-        }
-        .header p {
-            margin: 5px 0;
-            color: #7f8c8d;
-        }
-        .info-section {
-            margin-bottom: 25px;
-            background-color: #f8f9fa;
-            padding: 15px;
-            border-radius: 8px;
-        }
-        .info-section table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        .info-section td {
-            padding: 6px 0;
-        }
-        .info-section td:first-child {
-            width: 150px;
-            font-weight: 600;
-            color: #495057;
-        }
-        .items-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-        .items-table th {
-            background-color: #3498db;
-            color: white;
-            padding: 12px;
-            text-align: left;
-            font-weight: 600;
-        }
-        .items-table td {
-            padding: 10px;
-            border-bottom: 1px solid #dee2e6;
-        }
-        .items-table tbody tr:hover {
-            background-color: #f8f9fa;
-        }
-        .text-right {
-            text-align: right;
-        }
-        .text-center {
-            text-align: center;
-        }
-        .total-section {
-            margin-top: 20px;
-            padding: 15px;
-            background-color: #e8f5e9;
-            border-radius: 8px;
-        }
-        .total-row {
-            display: flex;
-            justify-content: space-between;
-            margin: 10px 0;
-            font-size: 18px;
-        }
-        .total-row.grand-total {
-            font-weight: 700;
-            font-size: 22px;
-            color: #2c3e50;
-            border-top: 2px solid #27ae60;
-            padding-top: 15px;
-            margin-top: 15px;
-        }
-        .footer {
-            margin-top: 40px;
-            text-align: center;
-            color: #7f8c8d;
-            font-size: 14px;
-            border-top: 1px solid #dee2e6;
-            padding-top: 15px;
-        }
-        .print-button {
-            text-align: center;
-            margin: 20px 0;
-        }
-        .btn-print {
-            background-color: #3498db;
-            color: white;
-            padding: 12px 30px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: 600;
-        }
-        .btn-print:hover {
-            background-color: #2980b9;
-        }
-        @media print {
-            .print-button {
-                display: none;
-            }
-        }
-    </style>
-</head>
-<body>
-    <div class="header">
-        <h1>🏪 TOKO SERBA ADA</h1>
-        <p>Jl. Raya Perdagangan No. 123, Telp: (021) 1234-5678</p>
-        <p>Email: tokoserbaada@email.com</p>
+@extends('adminlte::page')
+
+@section('title', 'Cetak Transaksi Penjualan')
+
+@section('content_header')
+    <h1><i class="fas fa-print"></i> Cetak Struk Penjualan</h1>
+@stop
+
+@section('content')
+<div class="card shadow">
+    <div class="card-header bg-primary text-white">
+        <h5 class="mb-0">TOKO SERBA ADA</h5>
     </div>
+    <div class="card-body">
+        <p class="text-center mb-3"><strong>Alamat Jl. Wonosari KM.7 Bantul</strong></p>
+        <hr>
+        
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <table class="table table-sm table-borderless">
+                    <tr>
+                        <td width="150"><strong>No Transaksi</strong></td>
+                        <td>: <b>{{ $id }}</b></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Tanggal</strong></td>
+                        <td>: <b>{{ $tgl }}</b></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Pelanggan</strong></td>
+                        <td>: <b>{{ $pelanggan ? $pelanggan->nama_pelanggan : '-' }}</b></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
 
-    <div class="info-section">
-        <table>
-            <tr>
-                <td>No. Transaksi</td>
-                <td>: <strong>{{ $id }}</strong></td>
-            </tr>
-            <tr>
-                <td>Tanggal</td>
-                <td>: {{ date('d F Y', strtotime($tgl)) }}</td>
-            </tr>
-            <tr>
-                <td>Nama Pelanggan</td>
-                <td>: {{ $pelanggan->nama_pelanggan }}</td>
-            </tr>
-            <tr>
-                <td>Alamat</td>
-                <td>: {{ $pelanggan->alamat }}</td>
-            </tr>
-            <tr>
-                <td>Telepon</td>
-                <td>: {{ $pelanggan->telp_hp }}</td>
-            </tr>
-            <tr>
-                <td>Kasir</td>
-                <td>: {{ auth()->user()->name }}</td>
-            </tr>
-        </table>
-    </div>
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th width="5%" class="text-center">No</th>
+                        <th width="15%">Kode</th>
+                        <th width="35%">Nama Barang</th>
+                        <th width="10%" class="text-center">Qty</th>
+                        <th width="10%">Satuan</th>
+                        <th width="15%" class="text-end">Harga (Rp)</th>
+                        <th width="15%" class="text-end">Total (Rp)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @php
+                    $i = 1;
+                    $total = 0;
+                    @endphp
+                    @foreach($djual as $j)
+                    <tr>
+                        <td class="text-center">{{ $i++ }}</td>
+                        <td>{{ $j->barang_id }}</td>
+                        <td>{{ $j->barang->nama_barang }}</td>
+                        <td class="text-center">{{ $j->qty }}</td>
+                        <td>{{ $j->barang->satuan }}</td>
+                        <td class="text-end">{{ number_format($j->harga_sekarang, 0, ',', '.') }}</td>
+                        <td class="text-end">{{ number_format($j->qty * $j->harga_sekarang, 0, ',', '.') }}</td>
+                        @php
+                        $total += $j->qty * $j->harga_sekarang;
+                        @endphp
+                    </tr>
+                    @endforeach
+                </tbody>
+                <tfoot class="table-secondary">
+                    <tr>
+                        <th colspan="6" class="text-end">TOTAL PEMBAYARAN</th>
+                        <th class="text-end">Rp {{ number_format($total, 0, ',', '.') }}</th>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
 
-    <h3 style="margin-bottom: 15px; color: #2c3e50;">
-        <i>📋</i> Detail Pembelian
-    </h3>
-    <table class="items-table">
-        <thead>
-            <tr>
-                <th class="text-center" width="5%">No</th>
-                <th width="15%">Kode Barang</th>
-                <th width="35%">Nama Barang</th>
-                <th class="text-center" width="10%">Qty</th>
-                <th width="15%">Satuan</th>
-                <th class="text-right" width="20%">Harga (Rp)</th>
-                <th class="text-right" width="20%">Subtotal (Rp)</th>
-            </tr>
-        </thead>
-        <tbody>
-            @php $grandTotal = 0; @endphp
-            @foreach($djual as $index => $item)
-            @php 
-                $subtotal = $item->qty * $item->harga_sekarang;
-                $grandTotal += $subtotal;
-            @endphp
-            <tr>
-                <td class="text-center">{{ $index + 1 }}</td>
-                <td>{{ $item->barang_id }}</td>
-                <td>{{ $item->barang->nama_barang }}</td>
-                <td class="text-right">{{ number_format($item->qty, 0, ',', '.') }}</td>
-                <td>{{ $item->barang->satuan }}</td>
-                <td class="text-right">{{ number_format($item->harga_sekarang, 0, ',', '.') }}</td>
-                <td class="text-right">{{ number_format($subtotal, 0, ',', '.') }}</td>
-            </tr>
-            @endforeach
-        </tbody>
-    </table>
-
-    <div class="total-section">
-        <div class="total-row grand-total">
-            <span>TOTAL PEMBAYARAN</span>
-            <span>Rp {{ number_format($grandTotal, 0, ',', '.') }}</span>
+        <div class="d-flex justify-content-between mt-4">
+            <a href="{{ route('jual.index') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Kembali
+            </a>
+            <button onclick="window.print()" class="btn btn-primary">
+                <i class="fas fa-print"></i> Cetak Struk
+            </button>
         </div>
     </div>
+</div>
 
-    <div class="footer">
-        <p><strong>Terima kasih atas kunjungan Anda!</strong></p>
-        <p>Barang yang sudah dibeli tidak dapat dikembalikan</p>
-        <p style="font-style: italic; margin-top: 10px;">Dicetak pada: {{ date('d F Y H:i:s') }}</p>
-    </div>
+<style>
+@media print {
+    .btn, .main-header, .main-sidebar, .content-header, .main-footer {
+        display: none !important;
+    }
+    .card {
+        border: none !important;
+        box-shadow: none !important;
+    }
+    .card-header {
+        background-color: white !important;
+        color: black !important;
+        border-bottom: 2px solid #000 !important;
+    }
+}
+</style>
+@stop
 
-    <div class="print-button">
-        <button class="btn-print" onclick="window.print()">🖨️ Cetak Struk</button>
-    </div>
+@section('css')
+@stop
 
-    <script>
-        // Auto print saat halaman dimuat (opsional)
-        // window.onload = function() { window.print(); }
-    </script>
-</body>
-</html>
+@section('js')
+@stop

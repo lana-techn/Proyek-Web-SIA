@@ -98,6 +98,22 @@
         color: white;
         transform: translateY(-1px);
     }
+    .btn-delete {
+        background-color: #ef4444;
+        color: white;
+        border: none;
+        cursor: pointer;
+    }
+    .btn-delete:hover {
+        background-color: #dc2626;
+        color: white;
+        transform: translateY(-1px);
+    }
+    .btn-group {
+        display: flex;
+        gap: 4px;
+        justify-content: center;
+    }
     .empty-state {
         text-align: center;
         padding: 60px 20px;
@@ -111,6 +127,20 @@
 </style>
 
 <div class="container-fluid">
+    @if(session('success'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle"></i> {{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    @endif
+    
+    @if(session('error'))
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle"></i> {{ session('error') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    @endif
+    
     <div class="card-custom">
         <div class="d-flex justify-content-between align-items-center mb-3">
             <div>
@@ -167,9 +197,21 @@
                             </span>
                         </td>
                         <td style="text-align: center">
-                            <a href="{{ url('/jual/cetak/' . $item->id) }}" class="btn-action btn-print" target="_blank">
-                                <i class="bi bi-printer"></i> Cetak
-                            </a>
+                            <div class="btn-group" role="group">
+                                <a href="{{ url('/detailJual/' . $item->id) }}" class="btn-action btn-view" title="Edit">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <a href="{{ url('/jual/cetak/' . $item->id) }}" class="btn-action btn-print" target="_blank" title="Cetak">
+                                    <i class="bi bi-printer"></i>
+                                </a>
+                                <form action="{{ route('jual.destroy', $item->id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Yakin ingin menghapus transaksi ini?')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn-action btn-delete" title="Hapus">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
                         </td>
                     </tr>
                     @endforeach

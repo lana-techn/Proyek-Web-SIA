@@ -7,204 +7,132 @@
 @stop
 
 @section('content')
-<style>
-    .info-box {
-        background-color: #f8fafc;
-        border: 1px solid #e5e7eb;
-        border-radius: 8px;
-        padding: 16px;
-        margin-bottom: 20px;
-    }
-    .info-box .row {
-        margin-bottom: 8px;
-    }
-    .info-box .col-sm-2 {
-        font-weight: 600;
-        color: #475569;
-    }
-    table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-    table, td, th {
-        border: 1px solid #e5e7eb;
-    }
-    th {
-        background-color: #f8fafc;
-        color: #475569;
-        font-weight: 600;
-        padding: 12px;
-        text-align: left;
-    }
-    td {
-        padding: 10px;
-    }
-    .table-primary {
-        background-color: #eff6ff;
-    }
-    .table-primary th {
-        background-color: #dbeafe;
-    }
-    input[type="text"], input[type="number"] {
-        border: 1px solid #e5e7eb;
-        border-radius: 4px;
-        padding: 6px 8px;
-    }
-    input[type="text"]:focus, input[type="number"]:focus {
-        border-color: #3b82f6;
-        outline: none;
-    }
-    .btn-add {
-        background-color: #10b981;
-        color: white;
-        border: none;
-        padding: 6px 16px;
-        border-radius: 4px;
-        cursor: pointer;
-        font-weight: 600;
-    }
-    .btn-add:hover {
-        background-color: #059669;
-    }
-    .btn-delete {
-        background-color: #ef4444;
-        color: white;
-        border: none;
-        padding: 8px 20px;
-        border-radius: 6px;
-        cursor: pointer;
-        font-weight: 600;
-    }
-    .btn-delete:hover {
-        background-color: #dc2626;
-    }
-    .btn-save {
-        background-color: #3b82f6;
-        color: white;
-        border: none;
-        padding: 8px 20px;
-        border-radius: 6px;
-        cursor: pointer;
-        font-weight: 600;
-    }
-    .btn-save:hover {
-        background-color: #2563eb;
-    }
-    #table1 tfoot {
-        background-color: #f1f5f9;
-        font-weight: 700;
-    }
-</style>
+<nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/">Home</a></li>
+        <li class="breadcrumb-item"><a href="{{ url('/jual/create') }}">Form Pelanggan</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Masukan Daftar Belanja</li>
+    </ol>
+</nav>
 
-<div class="container-fluid">
-    <nav aria-label="breadcrumb" class="mb-3">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="/">Home</a></li>
-            <li class="breadcrumb-item"><a href="{{ url('/jual/create') }}">Form Pelanggan</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Masukan Daftar Belanja</li>
-        </ol>
-    </nav>
-
-    <div class="info-box">
+<!-- Info Box -->
+<div class="card shadow mb-3">
+    <div class="card-header bg-info text-white">
+        <h5 class="mb-0">Informasi Transaksi</h5>
+    </div>
+    <div class="card-body">
         <div class="row">
-            <div class="col-sm-2">Kasir</div>
-            <div class="col-sm-4">: {{ auth()->user()->name }}</div>
-        </div>
-        <div class="row">
-            <div class="col-sm-2">Tanggal Transaksi</div>
-            <div class="col-sm-4">: {{ date('d-m-Y') }}</div>
-        </div>
-        <div class="row">
-            <div class="col-sm-2">No Transaksi</div>
-            <div class="col-sm-4">: <b>{{ $id }}</b></div>
+            <div class="col-md-4"><strong>Kasir:</strong> {{ auth()->user()->name }}</div>
+            <div class="col-md-4"><strong>Tanggal Transaksi:</strong> {{ date('d-m-Y') }}</div>
+            <div class="col-md-4"><strong>No Transaksi:</strong> <b>{{ $id }}</b></div>
         </div>
     </div>
+</div>
 
-    <h5 class="mb-3"><i class="fas fa-plus-circle"></i> Tambah Barang</h5>
-    <table class="table-primary mb-4">
-        <thead>
-            <tr>
-                <th>Kode</th>
-                <th>Nama Barang</th>
-                <th>Qty</th>
-                <th>Satuan</th>
-                <th>Harga (Rp)</th>
-                <th>Total (Rp)</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <form>
-                    <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                    <input type="hidden" name="jual_id" value="{{ $id }}">
-                    <td>
-                        <input type="text" class="barang_id" size="10" name="barang_id" 
-                               placeholder="Kode" title="Setelah diisi tekan enter">
-                    </td>
-                    <td>
-                        <input size="35" id="nama_barang" type="text" name="nama_barang" disabled>
-                    </td>
-                    <td>
-                        <input size="5" type="number" id="qty" name="qty" value="0">
-                    </td>
-                    <td>
-                        <input size="10" id="satuan" type="text" name="satuan" disabled>
-                    </td>
-                    <td>
-                        <input size="12" id="harga" type="number" name="harga_sekarang" 
-                               style="text-align:right" disabled>
-                    </td>
-                    <td>
-                        <input size="12" id="total" type="number" name="total" 
-                               style="text-align:right" readonly>
-                    </td>
-                    <td>
-                        <button type="button" class="btn-add add-row">+</button>
-                    </td>
-                </form>
-            </tr>
-        </tbody>
-    </table>
+<!-- Form Input Barang -->
+<div class="card shadow mb-3">
+    <div class="card-header bg-primary text-white">
+        <h5 class="mb-0"><i class="fas fa-plus-circle"></i> Tambah Barang</h5>
+    </div>
+    <div class="card-body">
+        <form>
+            <input type="hidden" name="_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="jual_id" value="{{ $id }}">
+            
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Kode</th>
+                            <th>Nama Barang</th>
+                            <th>Qty</th>
+                            <th>Satuan</th>
+                            <th>Harga (Rp)</th>
+                            <th>Total (Rp)</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <input type="text" class="form-control form-control-sm barang_id" name="barang_id" 
+                                       placeholder="Kode" title="Setelah diisi tekan enter">
+                            </td>
+                            <td>
+                                <input class="form-control form-control-sm" id="nama_barang" type="text" name="nama_barang" disabled>
+                            </td>
+                            <td>
+                                <input class="form-control form-control-sm" type="number" id="qty" name="qty" value="0" style="width: 80px;">
+                            </td>
+                            <td>
+                                <input class="form-control form-control-sm" id="satuan" type="text" name="satuan" disabled style="width: 100px;">
+                            </td>
+                            <td>
+                                <input class="form-control form-control-sm" id="harga" type="number" name="harga_sekarang" 
+                                       style="text-align:right" disabled>
+                            </td>
+                            <td>
+                                <input class="form-control form-control-sm" id="total" type="number" name="total" 
+                                       style="text-align:right" readonly>
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-success btn-sm add-row">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </form>
+    </div>
+</div>
 
-    <h5 class="mb-3"><i class="fas fa-shopping-cart"></i> Keranjang Belanja</h5>
-    <table id="table1" class="mb-3">
-        <thead>
-            <tr>
-                <th width="5%">Pilih</th>
-                <th width="10%">Kode</th>
-                <th width="35%">Nama Barang</th>
-                <th width="10%">Qty</th>
-                <th width="10%">Satuan</th>
-                <th width="15%">Harga (Rp)</th>
-                <th width="15%">Total (Rp)</th>
-            </tr>
-        </thead>
-        <tbody>
-        </tbody>
-        <tfoot>
-            <tr>
-                <th colspan="6" style="text-align:right">TOTAL PEMBELIAN :</th>
-                <td style="text-align:right; font-size: 1.1em;">
-                    <output id="jtotal" style="text-align:right">0</output>
-                </td>
-            </tr>
-        </tfoot>
-    </table>
+<!-- Keranjang Belanja -->
+<div class="card shadow">
+    <div class="card-header bg-success text-white">
+        <h5 class="mb-0"><i class="fas fa-shopping-cart"></i> Keranjang Belanja</h5>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table id="table1" class="table table-bordered table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th width="5%">Pilih</th>
+                        <th width="10%">Kode</th>
+                        <th width="35%">Nama Barang</th>
+                        <th width="10%">Qty</th>
+                        <th width="10%">Satuan</th>
+                        <th width="15%">Harga (Rp)</th>
+                        <th width="15%">Total (Rp)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+                <tfoot class="table-secondary">
+                    <tr>
+                        <th colspan="6" style="text-align:right">TOTAL PEMBELIAN :</th>
+                        <td style="text-align:right; font-size: 1.1em; font-weight: bold;">
+                            <output id="jtotal" style="text-align:right">0</output>
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
 
-    <div class="mt-3">
-        <button type="button" class="btn-delete delete-row">
-            <i class="fas fa-trash"></i> Hapus Item
-        </button>
-        <button type="button" class="btn-save simpan">
-            <i class="fas fa-save"></i> Simpan & Cetak
-        </button>
+        <div class="d-flex justify-content-between mt-3">
+            <button type="button" class="btn btn-danger delete-row">
+                <i class="fas fa-trash"></i> Hapus Item
+            </button>
+            <button type="button" class="btn btn-primary simpan">
+                <i class="fas fa-save"></i> Simpan & Cetak
+            </button>
+        </div>
     </div>
 </div>
 @stop
 
 @section('css')
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
 @stop
 
 @section('js')
@@ -225,7 +153,7 @@ $(document).ready(function() {
             }
             
             $.ajax({
-                url: '{{ url("/bacaBarang") }}',
+                url: '/bacaBarang',
                 type: 'POST',
                 data: {_token: CSRF_TOKEN, id: $(".barang_id").val()},
                 dataType: 'JSON',
@@ -350,7 +278,7 @@ $(document).ready(function() {
         
         // Kirim ke server untuk disimpan
         $.ajax({
-            url: '{{ url("/jual/simpan") }}',
+            url: '/jual/simpan',
             type: 'POST',
             data: {
                 _token: CSRF_TOKEN,
