@@ -105,6 +105,7 @@ Route::middleware('auth')->group(function () {
     Route::get('jual', [JualController::class, 'index'])->name('jual.index');
     Route::get('jual/create', [JualController::class, 'create'])->name('jual.create');
     Route::post('jual/store', [JualController::class, 'store'])->name('jual.store');
+    Route::delete('jual/{id}', [JualController::class, 'destroy'])->name('jual.destroy');
     Route::post('bacaPelanggan', [JualController::class, 'getPelanggan']);
     Route::get('detailJual/{id}', [JualController::class, 'detailJual']);
     Route::post('bacaBarang', [JualController::class, 'getBarang']);
