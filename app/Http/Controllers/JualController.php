@@ -38,33 +38,26 @@ class JualController extends Controller
     }
     
     /**
-     * Membuat nomor transaksi baru dan menampilkan form
+     * Menampilkan form transaksi baru (tidak insert ke database)
      */
     public function create()
     {
-        $tgJam = date('Y-m-d H:i:s');
-        
-        // Generate nomor transaksi: TRX-YYYYMMDD-XXXX
+        // Hanya menampilkan form, tidak insert ke database
+        // Generate nomor transaksi preview
         $lastJual = DB::table('jual')
             ->whereDate('tanggal', date('Y-m-d'))
             ->orderBy('id', 'desc')
             ->first();
         
-        $counter = $lastJual ? (intval(substr($lastJual->no_transaksi, -4)) + 1) : 1;
+        $counter = $lastJual ? (intval(substr($lastJual->no_transaksi ?? $lastJual->id, -4)) + 1) : 1;
         $noTransaksi = 'TRX-' . date('Ymd') . '-' . str_pad($counter, 4, '0', STR_PAD_LEFT);
         
-        // Menambah 1 rekaman untuk nomor transaksi
-        $id = DB::table('jual')->insertGetId([
+        // Buat object dummy untuk preview (tidak disimpan ke database)
+        $jual = (object)[
+            'id' => 'PREVIEW',
             'no_transaksi' => $noTransaksi,
-            'tanggal' => date('Y-m-d'),
-            'nama_pembeli' => '-',  // Temporary, akan diupdate setelah pilih pelanggan
-            'created_at' => $tgJam,
-            'updated_at' => $tgJam,
-            'user_id' => Auth::id()
-        ]);
-        
-        // Membaca nomor (id) untuk ditampilkan ke formulir create
-        $jual = DB::table('jual')->where('id', $id)->first();
+            'tanggal' => date('Y-m-d')
+        ];
         
         return view('jual.create', compact('jual'));
     }
@@ -84,26 +77,37 @@ class JualController extends Controller
     }
     
     /**
-     * Menyimpan data pelanggan
+     * Menyimpan data pelanggan dan membuat transaksi baru
      * Dilanjutkan ke detail_jual
      */
     public function store(Request $request)
     {
         $tgJam = date('Y-m-d H:i:s');
         
-        // Ambil data pelanggan untuk mengisi nama_pembeli
+        // Generate nomor transaksi
+        $lastJual = DB::table('jual')
+            ->whereDate('tanggal', date('Y-m-d'))
+            ->orderBy('id', 'desc')
+            ->first();
+        
+        $counter = $lastJual ? (intval(substr($lastJual->no_transaksi ?? $lastJual->id, -4)) + 1) : 1;
+        $noTransaksi = 'TRX-' . date('Ymd') . '-' . str_pad($counter, 4, '0', STR_PAD_LEFT);
+        
+        // Ambil data pelanggan
         $pelanggan = DB::table('pelanggan')->where('id', $request->pelanggan_id)->first();
         
-        DB::table('jual')->where('id', $request->id)
-            ->update([
-                'pelanggan_id' => $request->pelanggan_id,
-                'nama_pembeli' => $pelanggan->nama_pelanggan ?? '-',
-                'alamat' => $pelanggan->alamat ?? null,
-                'telepon' => $pelanggan->telp_hp ?? null,
-                'updated_at' => $tgJam
-            ]);
-        
-        $id = $request->id;
+        // Buat transaksi baru
+        $id = DB::table('jual')->insertGetId([
+            'no_transaksi' => $noTransaksi,
+            'pelanggan_id' => $request->pelanggan_id,
+            'tanggal' => date('Y-m-d'),
+            'nama_pembeli' => $pelanggan->nama_pelanggan ?? '-',
+            'alamat' => $pelanggan->alamat ?? null,
+            'telepon' => $pelanggan->telp_hp ?? null,
+            'created_at' => $tgJam,
+            'updated_at' => $tgJam,
+            'user_id' => Auth::id()
+        ]);
         
         return response()->json(['success' => true, 'id' => $id]);
     }
@@ -209,8 +213,48 @@ class JualController extends Controller
         $djual = DetailJual::where('jual_id', $id)->get();
         $jual = Jual::find($id);
         $tgl = $jual->tanggal;
-        $pelanggan = Pelanggan::find($jual->pelanggan_id);
+        
+        // Handle null pelanggan_id
+        $pelanggan = null;
+        if ($jual->pelanggan_id) {
+            $pelanggan = Pelanggan::find($jual->pelanggan_id);
+        }
         
         return view('jual.cetak', compact('djual', 'pelanggan', 'id', 'tgl'));
+    }
+    
+    /**
+     * Hapus transaksi penjualan
+     */
+    public function destroy($id)
+    {
+        DB::beginTransaction();
+        try {
+            // Ambil detail jual untuk restore stok
+            $detailJual = DetailJual::where('jual_id', $id)->get();
+            
+            // Restore stok barang
+            foreach ($detailJual as $detail) {
+                DB::table('barang')
+                    ->where('id', $detail->barang_id)
+                    ->update([
+                        'stok' => DB::raw('stok + ' . $detail->qty)
+                    ]);
+            }
+            
+            // Hapus detail jual (cascade akan handle ini jika ada foreign key)
+            DetailJual::where('jual_id', $id)->delete();
+            
+            // Hapus transaksi jual
+            Jual::destroy($id);
+            
+            DB::commit();
+            
+            return redirect()->route('jual.index')->with('success', 'Transaksi berhasil dihapus');
+            
+        } catch (\Throwable $e) {
+            DB::rollback();
+            return redirect()->route('jual.index')->with('error', 'Gagal menghapus transaksi: ' . $e->getMessage());
+        }
     }
 }
