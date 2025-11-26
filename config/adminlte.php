@@ -352,20 +352,7 @@ return [
             'icon' => 'fas fa-fw fa-book',
             'icon_color' => 'indigo',
         ],
-        ['header' => 'PENJUALAN ONLINE'],
-        [
-            'text' => 'Transaksi Penjualan',
-            'url' => 'penjualan',
-            'icon' => 'fas fa-fw fa-shopping-cart',
-            'icon_color' => 'red',
-        ],
-        [
-            'text' => 'Transaksi Baru',
-            'url' => 'penjualan/create',
-            'icon' => 'fas fa-fw fa-plus-circle',
-            'icon_color' => 'green',
-        ],
-        ['header' => 'TRANSAKSI JUAL (PELANGGAN)'],
+        ['header' => 'TRANSAKSI PENJUALAN'],
         [
             'text' => 'Daftar Transaksi',
             'url' => 'jual',
