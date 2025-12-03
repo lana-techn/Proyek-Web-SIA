@@ -11,7 +11,28 @@ class BarangController extends Controller
     public function index()
     {
         $barang = Barang::paginate(10);
-        return view('barang.index', compact('barang'));
+        
+        // Barang Terlaris (berdasarkan total qty terjual dari detail_jual)
+        $barangTerlaris = \DB::table('barang')
+            ->leftJoin('detail_jual', 'barang.id', '=', 'detail_jual.barang_id')
+            ->select(
+                'barang.id',
+                'barang.nama_barang',
+                'barang.stok',
+                \DB::raw('COALESCE(SUM(detail_jual.qty), 0) as total_terjual')
+            )
+            ->groupBy('barang.id', 'barang.nama_barang', 'barang.stok')
+            ->orderBy('total_terjual', 'DESC')
+            ->limit(5)
+            ->get();
+        
+        // Barang Stok Menipis (stok <= 10)
+        $barangStokMenipis = Barang::where('stok', '<=', 10)
+            ->orderBy('stok', 'ASC')
+            ->limit(5)
+            ->get();
+        
+        return view('barang.index', compact('barang', 'barangTerlaris', 'barangStokMenipis'));
     }
 
     public function create()

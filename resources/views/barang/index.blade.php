@@ -119,9 +119,113 @@
         background-color: #dbeafe;
         color: #1e40af;
     }
+    .stats-row {
+        margin-bottom: 1.5rem;
+    }
+    .stat-card {
+        background: white;
+        border-radius: 12px;
+        padding: 1.25rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        border: 1px solid #e5e7eb;
+        transition: all 0.2s ease;
+    }
+    .stat-card:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        transform: translateY(-2px);
+    }
+    .stat-card.terlaris { 
+        border-left: 4px solid #f59e0b; 
+    }
+    .stat-card.stok-menipis { 
+        border-left: 4px solid #ef4444; 
+    }
+    .stat-number {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #1a1d29;
+        margin: 0;
+    }
+    .stat-label {
+        color: #6b7280;
+        font-size: 0.875rem;
+        margin: 0;
+        font-weight: 600;
+    }
+    .stat-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, #f8fafc 0%, #e5e7eb 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        color: #6b7280;
+    }
+    .detail-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        border: 1px solid #e5e7eb;
+        overflow: hidden;
+    }
+    .detail-card-header {
+        padding: 12px 16px;
+        background-color: #f8fafc;
+        border-bottom: 1px solid #e5e7eb;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-weight: 600;
+        color: #475569;
+        font-size: 0.875rem;
+        transition: all 0.2s ease;
+    }
+    .detail-card-header:hover {
+        background-color: #f1f5f9;
+    }
+    .detail-card-body {
+        padding: 16px;
+        max-height: 250px;
+        overflow-y: auto;
+        transition: all 0.3s ease;
+    }
+    .detail-card-header i.fa-chevron-down,
+    .detail-card-header i.fa-chevron-up {
+        transition: transform 0.3s ease;
+    }
+    .detail-item {
+        padding: 10px;
+        margin-bottom: 8px;
+        background-color: #f8fafc;
+        border-radius: 8px;
+        transition: all 0.2s ease;
+    }
+    .detail-item:hover {
+        background-color: #f1f5f9;
+    }
+    .detail-item:last-child {
+        margin-bottom: 0;
+    }
+    .badge-rank-small {
+        display: inline-block;
+        width: 24px;
+        height: 24px;
+        line-height: 24px;
+        text-align: center;
+        background-color: #3b82f6;
+        color: white;
+        border-radius: 50%;
+        font-weight: 700;
+        font-size: 0.75rem;
+        margin-right: 8px;
+    }
 </style>
 
 <div class="container-fluid">
+    <!-- Add Button -->
     <div class="mb-3">
         <a href="{{ route('barang.create') }}" class="btn btn-primary">
             <i class="bi bi-plus-circle me-1"></i> Tambah Barang
@@ -129,9 +233,117 @@
     </div>
 
     @if (session('success'))
-        <div class="alert alert-success">
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
             <i class="bi bi-check-circle me-2"></i>{{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
+    @endif
+
+    <!-- Stats Cards -->
+    <div class="row stats-row mb-4">
+        <!-- Barang Terlaris -->
+        <div class="col-md-6">
+            <div class="stat-card terlaris">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <p class="stat-label mb-2"><i class="fas fa-fire"></i> Barang Terlaris</p>
+                        @if($barangTerlaris->count() > 0 && $barangTerlaris->first()->total_terjual > 0)
+                            <p class="stat-number mb-1">{{ $barangTerlaris->first()->nama_barang }}</p>
+                            <small class="text-muted">{{ $barangTerlaris->first()->total_terjual }} terjual • Stok: {{ $barangTerlaris->first()->stok }}</small>
+                        @else
+                            <p class="stat-number mb-1">-</p>
+                            <small class="text-muted">Belum ada penjualan</small>
+                        @endif
+                    </div>
+                    <div class="stat-icon">
+                        <i class="fas fa-trophy"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stok Menipis -->
+        <div class="col-md-6">
+            <div class="stat-card stok-menipis">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <p class="stat-label mb-2"><i class="fas fa-exclamation-triangle"></i> Stok Menipis</p>
+                        @if($barangStokMenipis->count() > 0)
+                            <p class="stat-number mb-1">{{ $barangStokMenipis->count() }} Barang</p>
+                            <small class="text-muted">Perlu segera di-restock</small>
+                        @else
+                            <p class="stat-number mb-1">0 Barang</p>
+                            <small class="text-muted">Semua stok aman</small>
+                        @endif
+                    </div>
+                    <div class="stat-icon">
+                        <i class="fas fa-box-open"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Detail Cards (Collapsible) -->
+    @if(($barangTerlaris->count() > 0 && $barangTerlaris->first()->total_terjual > 0) || $barangStokMenipis->count() > 0)
+    <div class="row mb-4">
+        @if($barangTerlaris->count() > 0 && $barangTerlaris->first()->total_terjual > 0)
+        <div class="col-md-6">
+            <div class="detail-card">
+                <div class="detail-card-header" onclick="toggleDetail('detailTerlaris')">
+                    <span><i class="fas fa-chart-line"></i> Top 5 Barang Terlaris</span>
+                    <i class="fas fa-chevron-down" id="icon-detailTerlaris"></i>
+                </div>
+                <div class="detail-card-body" id="detailTerlaris" style="display: none;">
+                    @foreach($barangTerlaris as $index => $item)
+                    <div class="detail-item">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="badge-rank-small">{{ $index + 1 }}</span>
+                                <strong>{{ $item->nama_barang }}</strong>
+                            </div>
+                            <div class="text-end">
+                                <span class="badge" style="background-color: #d1fae5; color: #065f46;">
+                                    {{ $item->total_terjual }} terjual
+                                </span>
+                                <small class="text-muted d-block">Stok: {{ $item->stok }}</small>
+                            </div>
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+            </div>
+        </div>
+        @endif
+
+        @if($barangStokMenipis->count() > 0)
+        <div class="col-md-6">
+            <div class="detail-card">
+                <div class="detail-card-header" onclick="toggleDetail('detailStok')">
+                    <span><i class="fas fa-exclamation-circle"></i> Detail Stok Menipis</span>
+                    <i class="fas fa-chevron-down" id="icon-detailStok"></i>
+                </div>
+                <div class="detail-card-body" id="detailStok" style="display: none;">
+                    @foreach($barangStokMenipis as $item)
+                    <div class="detail-item">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>{{ $item->nama_barang }}</strong>
+                                <small class="text-muted d-block">{{ $item->jenis->nama_jenis }}</small>
+                            </div>
+                            <div>
+                                <span class="badge" style="background-color: {{ $item->stok <= 5 ? '#fee2e2' : '#fef3c7' }}; color: {{ $item->stok <= 5 ? '#991b1b' : '#92400e' }};">
+                                    Stok: {{ $item->stok }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+            </div>
+        </div>
+        @endif
+    </div>
     @endif
 
     <div class="card-table">
@@ -248,5 +460,21 @@
 @section('js')
     <script>
         console.log('Halaman Daftar Barang');
+        
+        // Toggle detail cards
+        function toggleDetail(id) {
+            const element = document.getElementById(id);
+            const icon = document.getElementById('icon-' + id);
+            
+            if (element.style.display === 'none') {
+                element.style.display = 'block';
+                icon.classList.remove('fa-chevron-down');
+                icon.classList.add('fa-chevron-up');
+            } else {
+                element.style.display = 'none';
+                icon.classList.remove('fa-chevron-up');
+                icon.classList.add('fa-chevron-down');
+            }
+        }
     </script>
 @stop

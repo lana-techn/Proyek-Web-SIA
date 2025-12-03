@@ -320,37 +320,48 @@ return [
             'url' => 'home',
             'icon' => 'fas fa-fw fa-tachometer-alt',
         ],
-        ['header' => 'QUERY BUILDER'],
         [
-            'text' => 'Tabel Kota',
-            'url' => 'db/bacaDb1',
-            'icon' => 'fas fa-fw fa-map-marked-alt',
-            'icon_color' => 'green',
-        ],
-        [
-            'text' => 'Detail Kota',
-            'url' => 'db/bacaDb2',
-            'icon' => 'fas fa-fw fa-map-marker-alt',
-            'icon_color' => 'teal',
-        ],
-        [
-            'text' => 'Data Barang',
-            'url' => 'db/selectData',
+            'text' => 'Query Builder',
             'icon' => 'fas fa-fw fa-database',
             'icon_color' => 'purple',
+            'submenu' => [
+                [
+                    'text' => 'Tabel Kota',
+                    'url' => 'db/bacaDb1',
+                    'icon' => 'fas fa-fw fa-map-marked-alt',
+                    'icon_color' => 'green',
+                ],
+                [
+                    'text' => 'Detail Kota',
+                    'url' => 'db/bacaDb2',
+                    'icon' => 'fas fa-fw fa-map-marker-alt',
+                    'icon_color' => 'teal',
+                ],
+                [
+                    'text' => 'Data Barang',
+                    'url' => 'db/selectData',
+                    'icon' => 'fas fa-fw fa-table',
+                    'icon_color' => 'blue',
+                ],
+                [
+                    'text' => 'Aggregate Functions',
+                    'url' => 'db/aggregate',
+                    'icon' => 'fas fa-fw fa-calculator',
+                    'icon_color' => 'orange',
+                ],
+            ],
         ],
         [
-            'text' => 'Aggregate Functions',
-            'url' => 'db/aggregate',
-            'icon' => 'fas fa-fw fa-calculator',
-            'icon_color' => 'orange',
-        ],
-        ['header' => 'KATALOG BUKU'],
-        [
-            'text' => 'Daftar Buku',
-            'url' => 'buku',
+            'text' => 'Katalog Buku',
             'icon' => 'fas fa-fw fa-book',
             'icon_color' => 'indigo',
+            'submenu' => [
+                [
+                    'text' => 'Daftar Buku',
+                    'url' => 'buku',
+                    'icon' => 'fas fa-fw fa-list',
+                ],
+            ],
         ],
         ['header' => 'TRANSAKSI PENJUALAN'],
         [
@@ -367,17 +378,18 @@ return [
         ],
         ['header' => 'MASTER DATA'],
         [
-            'text' => 'Jenis Barang',
-            'url' => 'jenis-barang',
-            'icon' => 'fas fa-fw fa-tags',
-            'icon_color' => 'cyan',
-        ],
-        [
             'text' => 'Barang',
             'url' => 'barang',
             'icon' => 'fas fa-fw fa-box',
             'icon_color' => 'blue',
         ],
+        [
+            'text' => 'Jenis Barang',
+            'url' => 'jenis-barang',
+            'icon' => 'fas fa-fw fa-tags',
+            'icon_color' => 'cyan',
+        ],
+        
         ['header' => 'PENGATURAN'],
         [
             'text' => 'Pengaturan',
