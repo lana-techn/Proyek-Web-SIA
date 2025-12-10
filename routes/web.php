@@ -14,11 +14,10 @@ use App\Http\Controllers\ProdukController;
 // use App\Http\Controllers\SegiTigaController;
 use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\LandingController;
 use Illuminate\Support\Facades\Auth;
 
-Route::get('/', function () {
-    return view('landing');
-})->name('landing');
+Route::get('/', [LandingController::class, 'index'])->name('landing');
 
 Route::get('/dashboard', function () {
     return redirect()->route('admin.dashboard');
