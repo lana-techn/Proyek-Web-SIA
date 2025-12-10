@@ -93,6 +93,44 @@ php artisan db:seed
 php artisan serve
 ```
 
+## 📊 Database Seeding
+
+### Quick Setup on New Device
+
+Gunakan seeder otomatis untuk setup database lengkap dengan satu command:
+
+```bash
+# Fresh database + seeding all sample data
+php artisan migrate:fresh --seed
+
+# Atau hanya seeding tanpa fresh
+php artisan db:seed --class=DataSeeder
+```
+
+### Data yang di-seed:
+
+```
+✅ Jenis Barang: 8 kategori (Elektronik, Pakaian, Makanan, etc)
+✅ Barang: 20 produk dengan stock dan harga
+✅ Pelanggan: 5 customer dengan data lengkap
+✅ Kota: 5 kota di Indonesia
+✅ Pengarang: 5 author buku Indonesia
+✅ Buku: 7 buku dengan ISBN dan detail
+```
+
+### DataSeeder Details:
+
+- **File:** `database/seeders/DataSeeder.php`
+- **Backup Data:** `database_backup.json` (JSON export dari database)
+- **Status:** Tested & verified ✅
+
+### Untuk Migrasi ke Device Baru:
+
+1. Clone repository
+2. Copy `.env` dan configure database
+3. Run: `php artisan migrate:fresh --seed`
+4. Database siap dengan semua sample data!
+
 ## 👤 Default Users
 
 ```
