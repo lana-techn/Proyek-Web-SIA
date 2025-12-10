@@ -13,15 +13,15 @@ use App\Http\Controllers\ProdukController;
 // use App\Http\Controllers\SegiEmpatController;
 // use App\Http\Controllers\SegiTigaController;
 use App\Http\Controllers\Admin\SettingsController;
+use App\Http\Controllers\Admin\DashboardController;
 use Illuminate\Support\Facades\Auth;
 
 Route::get('/', function () {
-    return 'Hello Laravel !';
-});
+    return view('landing');
+})->name('landing');
 
 Route::get('/dashboard', function () {
-    return view('dashboard');
- //resources/views/dashboard.blade.php
+    return redirect()->route('admin.dashboard');
 });
 
 Route::get('/user{nama}', function ($nama) {
@@ -49,10 +49,8 @@ Route::get('/home', [HomeController::class, 'index']);
 Route::resources(['produk' => ProdukController::class]);
 
 
-Route::prefix('admin')->group(function () {
-    Route::get('/dashboard', function () {
-        return 'Halaman Dashboard Admin';
-    });
+Route::prefix('admin')->middleware('auth')->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
     Route::get('/laporan', function () {
         return 'Halaman Laporan Admin';
     });
@@ -128,4 +126,6 @@ Route::fallback(function () {
 
 Auth::routes();
 
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::get('/home', function () {
+    return redirect()->route('admin.dashboard');
+})->name('home');
