@@ -317,7 +317,7 @@ return [
         ],
         [
             'text' => 'Dashboard',
-            'url' => 'home',
+            'url' => 'admin/dashboard',
             'icon' => 'fas fa-fw fa-tachometer-alt',
         ],
         [
