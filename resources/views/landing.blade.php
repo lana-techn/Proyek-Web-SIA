@@ -8,6 +8,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
             --primary: #3b82f6;
@@ -890,6 +891,136 @@
                 text-align: center;
             }
         }
+
+        /* Chart Tabs */
+        .chart-tabs {
+            display: flex;
+            gap: 8px;
+        }
+
+        .chart-tab {
+            flex: 1;
+            padding: 10px 16px;
+            border: none;
+            background-color: var(--gray-100);
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--gray-600);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .chart-tab:hover {
+            background-color: var(--gray-200);
+        }
+
+        .chart-tab.active {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .chart-container {
+            min-height: 180px;
+        }
+
+        /* About Project Section */
+        .about-project-section {
+            padding: 80px 0;
+            background-color: white;
+        }
+
+        .about-project-card {
+            background-color: var(--gray-50);
+            border-radius: 24px;
+            padding: 48px;
+            border: 1px solid var(--gray-200);
+            border-left: 4px solid var(--primary);
+        }
+
+        .student-avatar {
+            font-size: 8rem;
+            color: var(--primary);
+            line-height: 1;
+        }
+
+        .github-avatar {
+            width: 160px;
+            height: 160px;
+            border-radius: 20px;
+            object-fit: cover;
+            border: 4px solid var(--primary);
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .github-avatar:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 40px rgba(59, 130, 246, 0.3);
+        }
+
+        .github-link {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .github-link:hover {
+            color: var(--primary-dark);
+            text-decoration: underline;
+        }
+
+        .about-title {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--dark);
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        .about-nim {
+            font-size: 1.1rem;
+            color: var(--primary);
+            font-weight: 700;
+            margin-bottom: 24px;
+        }
+
+        .about-details {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .about-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1rem;
+            color: var(--gray-600);
+        }
+
+        .about-item i {
+            font-size: 1.2rem;
+            color: var(--primary);
+            width: 24px;
+        }
+
+        @media (max-width: 768px) {
+            .about-project-card {
+                padding: 32px 24px;
+            }
+            .student-avatar {
+                font-size: 5rem;
+            }
+            .about-title {
+                font-size: 1.5rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -947,17 +1078,26 @@
                                     <i class="bi bi-box-seam"></i>
                                 </div>
                                 <div class="hero-stat-text">
-                                    <h4>100+</h4>
-                                    <p>Produk Terkelola</p>
+                                    <h4>{{ number_format($totalBarang) }}</h4>
+                                    <p>Total Barang</p>
                                 </div>
                             </div>
                             <div class="hero-stat">
                                 <div class="hero-stat-icon green">
-                                    <i class="bi bi-graph-up-arrow"></i>
+                                    <i class="bi bi-receipt"></i>
                                 </div>
                                 <div class="hero-stat-text">
-                                    <h4>99%</h4>
-                                    <p>Uptime</p>
+                                    <h4>{{ number_format($totalTransaksi) }}</h4>
+                                    <p>Transaksi</p>
+                                </div>
+                            </div>
+                            <div class="hero-stat">
+                                <div class="hero-stat-icon yellow">
+                                    <i class="bi bi-wallet2"></i>
+                                </div>
+                                <div class="hero-stat-text">
+                                    <h4>Rp {{ number_format($totalPenjualan / 1000000, 1) }}jt</h4>
+                                    <p>Penjualan</p>
                                 </div>
                             </div>
                         </div>
@@ -970,8 +1110,8 @@
                                 <i class="bi bi-check-lg"></i>
                             </div>
                             <div class="floating-text">
-                                <h5>Transaksi Sukses</h5>
-                                <p>+Rp 2.500.000</p>
+                                <h5>Total Penjualan</h5>
+                                <p>Rp {{ number_format($totalPenjualan, 0, ',', '.') }}</p>
                             </div>
                         </div>
                         <div class="hero-image">
@@ -980,19 +1120,23 @@
                                 <div class="hero-image-dot yellow"></div>
                                 <div class="hero-image-dot green"></div>
                             </div>
-                            <div class="hero-image-content">
-                                <div class="hero-mock-row">
-                                    <div class="hero-mock-item blue"></div>
-                                    <div class="hero-mock-item green"></div>
+                            <div class="hero-image-content" style="padding: 16px;">
+                                <!-- Chart Tabs -->
+                                <div class="chart-tabs mb-3">
+                                    <button class="chart-tab active" onclick="showChart('bar')" id="tab-bar">
+                                        <i class="bi bi-bar-chart-fill"></i> Barang Terlaris
+                                    </button>
+                                    <button class="chart-tab" onclick="showChart('doughnut')" id="tab-doughnut">
+                                        <i class="bi bi-pie-chart-fill"></i> Kategori
+                                    </button>
                                 </div>
-                                <div class="hero-mock-row">
-                                    <div class="hero-mock-item yellow"></div>
-                                    <div class="hero-mock-item purple"></div>
-                                    <div class="hero-mock-item blue"></div>
+                                <!-- Bar Chart -->
+                                <div id="chart-bar" class="chart-container">
+                                    <canvas id="topProductsChart" height="180"></canvas>
                                 </div>
-                                <div class="hero-mock-row">
-                                    <div class="hero-mock-item green"></div>
-                                    <div class="hero-mock-item yellow"></div>
+                                <!-- Doughnut Chart -->
+                                <div id="chart-doughnut" class="chart-container" style="display: none;">
+                                    <canvas id="categoryChart" height="180"></canvas>
                                 </div>
                             </div>
                         </div>
@@ -1001,8 +1145,8 @@
                                 <i class="bi bi-bar-chart-fill"></i>
                             </div>
                             <div class="floating-text">
-                                <h5>Penjualan Naik</h5>
-                                <p>+24% bulan ini</p>
+                                <h5>{{ $totalTransaksi }} Transaksi</h5>
+                                <p>Data Realtime</p>
                             </div>
                         </div>
                     </div>
@@ -1236,6 +1380,48 @@
         </div>
     </section>
 
+    <!-- About Project Section -->
+    <section class="about-project-section" id="about-project">
+        <div class="container">
+            <div class="about-project-card" data-aos="fade-up">
+                <div class="row align-items-center">
+                    <div class="col-lg-4 text-center text-lg-start mb-4 mb-lg-0">
+                        <div class="student-avatar">
+                            <a href="https://github.com/maulana-tech" target="_blank" title="View GitHub Profile">
+                                <img src="https://github.com/maulana-tech.png" alt="Muhammad Maulana Firdaussyah" class="github-avatar">
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-lg-8">
+                        <div class="section-badge mb-3">
+                            <i class="bi bi-mortarboard-fill"></i> Tugas Proyek Web
+                        </div>
+                        <h2 class="about-title">Muhammad Maulana Firdaussyah</h2>
+                        <p class="about-nim">NIM: 233210013</p>
+                        <div class="about-details">
+                            <div class="about-item">
+                                <i class="bi bi-building"></i>
+                                <span>Program Studi Sistem Informasi Akuntansi</span>
+                            </div>
+                            <div class="about-item">
+                                <i class="bi bi-geo-alt"></i>
+                                <span>Universitas Teknologi Digital Indonesia</span>
+                            </div>
+                            <div class="about-item">
+                                <i class="bi bi-calendar3"></i>
+                                <span>Tahun Ajaran {{ date('Y') }}</span>
+                            </div>
+                            <div class="about-item">
+                                <i class="bi bi-github"></i>
+                                <a href="https://github.com/maulana-tech" target="_blank" class="github-link">github.com/maulana-tech</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- CTA Section -->
     <section class="cta-section">
         <div class="container">
@@ -1260,7 +1446,7 @@
                     Aplikasi Barang
                 </div>
                 <p class="footer-text">
-                    &copy; {{ date('Y') }} Aplikasi Barang. Dibuat dengan <i class="bi bi-heart-fill text-danger"></i> menggunakan Laravel
+                    &copy; {{ date('Y') }} Aplikasi Barang. Proyek-Web <i class="bi bi-heart-fill text-danger"></i> menggunakan Laravel
                 </p>
                 <div class="footer-links">
                     <a href="#features">Fitur</a>
@@ -1305,6 +1491,90 @@
                     });
                 }
             });
+        });
+
+        // Chart Tab Switching
+        function showChart(type) {
+            document.getElementById('chart-bar').style.display = type === 'bar' ? 'block' : 'none';
+            document.getElementById('chart-doughnut').style.display = type === 'doughnut' ? 'block' : 'none';
+            document.getElementById('tab-bar').classList.toggle('active', type === 'bar');
+            document.getElementById('tab-doughnut').classList.toggle('active', type === 'doughnut');
+        }
+
+        // Chart.js - Top Products Bar Chart
+        const topProductsCtx = document.getElementById('topProductsChart').getContext('2d');
+        new Chart(topProductsCtx, {
+            type: 'bar',
+            data: {
+                labels: {!! json_encode($barangTerlaris->pluck('nama_barang')->map(fn($n) => strlen($n) > 12 ? substr($n, 0, 12) . '...' : $n)) !!},
+                datasets: [{
+                    label: 'Terjual',
+                    data: {!! json_encode($barangTerlaris->pluck('total_terjual')) !!},
+                    backgroundColor: [
+                        '#3b82f6',
+                        '#10b981',
+                        '#f59e0b',
+                        '#8b5cf6',
+                        '#ef4444'
+                    ],
+                    borderRadius: 6,
+                    borderSkipped: false
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: '#e5e7eb' },
+                        ticks: { font: { size: 10 } }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: { font: { size: 9 } }
+                    }
+                }
+            }
+        });
+
+        // Chart.js - Category Doughnut Chart
+        const categoryCtx = document.getElementById('categoryChart').getContext('2d');
+        new Chart(categoryCtx, {
+            type: 'doughnut',
+            data: {
+                labels: {!! json_encode($kategoriData->pluck('nama_jenis')) !!},
+                datasets: [{
+                    data: {!! json_encode($kategoriData->pluck('jumlah')) !!},
+                    backgroundColor: [
+                        '#3b82f6',
+                        '#10b981',
+                        '#f59e0b',
+                        '#8b5cf6',
+                        '#ef4444',
+                        '#06b6d4'
+                    ],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                        labels: {
+                            boxWidth: 12,
+                            padding: 12,
+                            font: { size: 10 }
+                        }
+                    }
+                },
+                cutout: '60%'
+            }
         });
     </script>
 </body>
