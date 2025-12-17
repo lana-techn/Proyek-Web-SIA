@@ -3,416 +3,432 @@
 @section('title', 'Rekap Penjualan Bulanan')
 
 @section('content_header')
-    <h1><i class="fas fa-calendar-alt"></i> Rekap Penjualan Per Bulan</h1>
+    <h1><i class="fas fa-chart-bar"></i> Rekap Penjualan Bulanan</h1>
 @stop
 
 @section('content')
 <style>
-    .card-custom {
-        background-color: #ffffff;
-        border-radius: 8px;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-        border: 1px solid #e5e7eb;
-        padding: 24px;
-        margin-bottom: 20px;
-    }
-    .filter-section {
-        background-color: #f8fafc;
-        border: 1px solid #e2e8f0;
+    .filter-card {
+        background: #fff;
         border-radius: 8px;
         padding: 20px;
         margin-bottom: 20px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     }
-    .filter-section label {
-        color: #374151;
-        font-weight: 600;
-        margin-bottom: 6px;
-        font-size: 13px;
+    .summary-row {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
     }
-    .filter-section .form-control,
-    .filter-section .form-select {
-        background-color: #ffffff;
-        border: 1px solid #d1d5db;
-        border-radius: 6px;
-        padding: 8px 12px;
-        font-size: 14px;
-    }
-    .filter-section .form-control:focus,
-    .filter-section .form-select:focus {
-        border-color: #6366f1;
-        box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.1);
-    }
-    .btn-filter {
-        background-color: #4f46e5;
-        color: white;
-        padding: 8px 20px;
-        border: none;
-        border-radius: 6px;
-        font-weight: 500;
-        font-size: 14px;
-        transition: background-color 0.2s ease;
-    }
-    .btn-filter:hover {
-        background-color: #4338ca;
-        color: white;
-    }
-    .btn-reset {
-        background-color: #ffffff;
-        color: #374151;
-        padding: 8px 20px;
-        border: 1px solid #d1d5db;
-        border-radius: 6px;
-        font-weight: 500;
-        font-size: 14px;
-        transition: all 0.2s ease;
-    }
-    .btn-reset:hover {
-        background-color: #f3f4f6;
-        color: #374151;
-        border-color: #9ca3af;
-    }
-    .btn-print {
-        background-color: #6366f1;
-        color: white;
-        padding: 8px 16px;
-        border: none;
-        border-radius: 6px;
-        font-weight: 500;
-        font-size: 14px;
-        transition: background-color 0.2s ease;
-    }
-    .btn-print:hover {
-        background-color: #4f46e5;
-        color: white;
-    }
-    .stat-card {
-        background-color: #ffffff;
-        border: 1px solid #e5e7eb;
+    .summary-box {
+        flex: 1;
+        min-width: 180px;
+        background: #fff;
         border-radius: 8px;
         padding: 20px;
-        margin-bottom: 20px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        border-left: 4px solid #6c757d;
     }
-    .stat-card.blue { border-left: 4px solid #3b82f6; }
-    .stat-card.green { border-left: 4px solid #10b981; }
-    .stat-card.purple { border-left: 4px solid #8b5cf6; }
-    .stat-card.orange { border-left: 4px solid #f59e0b; }
-    .stat-card h3 {
-        font-size: 1.75rem;
+    .summary-box.primary { border-left-color: #007bff; }
+    .summary-box.success { border-left-color: #28a745; }
+    .summary-box.warning { border-left-color: #ffc107; }
+    .summary-box.info { border-left-color: #17a2b8; }
+    .summary-box .label {
+        font-size: 12px;
+        color: #6c757d;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 5px;
+    }
+    .summary-box .value {
+        font-size: 22px;
         font-weight: 700;
-        margin-bottom: 4px;
-        color: #1f2937;
+        color: #333;
     }
-    .stat-card p {
-        color: #6b7280;
-        margin-bottom: 0;
-        font-size: 13px;
+    .summary-box .sub-value {
+        font-size: 12px;
+        color: #6c757d;
+        margin-top: 5px;
     }
-    .stat-card i {
-        color: #9ca3af;
+    .data-card {
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        overflow: hidden;
+        margin-bottom: 20px;
     }
-    table {
+    .data-card .card-header {
+        background: #f8f9fa;
+        padding: 15px 20px;
+        border-bottom: 1px solid #e9ecef;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .data-card .card-header h5 {
+        margin: 0;
+        font-weight: 600;
+        color: #333;
+    }
+    .data-card .card-body {
+        padding: 0;
+    }
+    .data-table {
         width: 100%;
         border-collapse: collapse;
     }
-    thead {
-        background-color: #f9fafb;
-        border-bottom: 2px solid #e5e7eb;
-    }
-    th {
-        padding: 12px;
+    .data-table th {
+        background: #f8f9fa;
+        padding: 12px 15px;
         text-align: left;
+        font-size: 12px;
         font-weight: 600;
-        font-size: 13px;
-        color: #374151;
+        color: #495057;
         text-transform: uppercase;
         letter-spacing: 0.5px;
+        border-bottom: 2px solid #dee2e6;
     }
-    td {
-        padding: 12px;
-        border-bottom: 1px solid #f3f4f6;
+    .data-table td {
+        padding: 12px 15px;
+        border-bottom: 1px solid #f1f3f4;
         font-size: 14px;
-        color: #4b5563;
+        color: #333;
     }
-    tbody tr {
-        transition: background-color 0.15s ease;
+    .data-table tbody tr:hover {
+        background: #f8f9fa;
     }
-    tbody tr:hover {
-        background-color: #f9fafb;
+    .data-table .text-right { text-align: right; }
+    .data-table .text-center { text-align: center; }
+    .data-table tfoot td {
+        background: #f8f9fa;
+        font-weight: 600;
+        border-top: 2px solid #dee2e6;
     }
     .empty-state {
-        text-align: center;
         padding: 60px 20px;
-        color: #6b7280;
+        text-align: center;
+        color: #6c757d;
     }
     .empty-state i {
-        font-size: 64px;
-        margin-bottom: 16px;
+        font-size: 48px;
+        margin-bottom: 15px;
         opacity: 0.5;
     }
-    .chart-container {
-        position: relative;
-        height: 300px;
-        margin-bottom: 24px;
+    .btn-group-action .btn {
+        padding: 6px 12px;
+        font-size: 13px;
     }
     .month-badge {
-        display: inline-block;
-        padding: 4px 12px;
-        border-radius: 20px;
+        background: #e9ecef;
+        padding: 4px 10px;
+        border-radius: 4px;
+        font-weight: 600;
         font-size: 13px;
+    }
+    .progress-mini {
+        height: 6px;
+        border-radius: 3px;
+        background: #e9ecef;
+        margin-top: 8px;
+        overflow: hidden;
+    }
+    .progress-mini .bar {
+        height: 100%;
+        border-radius: 3px;
+        background: #28a745;
+    }
+    .chart-wrapper {
+        padding: 20px;
+    }
+    .chart-bar {
+        display: flex;
+        align-items: flex-end;
+        gap: 8px;
+        height: 150px;
+        padding: 10px 0;
+        border-bottom: 2px solid #e9ecef;
+    }
+    .chart-bar-item {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        height: 100%;
+        justify-content: flex-end;
+    }
+    .chart-bar-item .bar {
+        width: 100%;
+        max-width: 50px;
+        background: linear-gradient(180deg, #007bff 0%, #0056b3 100%);
+        border-radius: 4px 4px 0 0;
+        transition: height 0.3s ease;
+        min-height: 4px;
+    }
+    .chart-bar-item .month-label {
+        font-size: 11px;
+        color: #6c757d;
+        margin-top: 8px;
+        font-weight: 500;
+    }
+    .chart-bar-item .value-label {
+        font-size: 10px;
+        color: #333;
+        margin-bottom: 5px;
         font-weight: 600;
     }
-    .month-jan { background: #fee2e2; color: #991b1b; }
-    .month-feb { background: #fce7f3; color: #9d174d; }
-    .month-mar { background: #ede9fe; color: #5b21b6; }
-    .month-apr { background: #dbeafe; color: #1e40af; }
-    .month-may { background: #d1fae5; color: #065f46; }
-    .month-jun { background: #fef3c7; color: #92400e; }
-    .month-jul { background: #ffedd5; color: #9a3412; }
-    .month-aug { background: #cffafe; color: #155e75; }
-    .month-sep { background: #e0e7ff; color: #3730a3; }
-    .month-oct { background: #fae8ff; color: #86198f; }
-    .month-nov { background: #f3e8ff; color: #6b21a8; }
-    .month-dec { background: #ecfccb; color: #3f6212; }
-    .progress-bar-custom {
-        background-color: #6366f1;
-        height: 20px;
+    .kontribusi-badge {
+        padding: 3px 8px;
         border-radius: 4px;
-        transition: width 0.4s ease;
+        font-size: 11px;
+        font-weight: 600;
     }
-    .progress-bg {
-        background-color: #e5e7eb;
-        border-radius: 4px;
-        overflow: hidden;
-        height: 20px;
-    }
+    .kontribusi-high { background: #d4edda; color: #155724; }
+    .kontribusi-medium { background: #cce5ff; color: #004085; }
+    .kontribusi-low { background: #e9ecef; color: #495057; }
     @media print {
-        .filter-section, .btn-print, .no-print {
-            display: none !important;
-        }
-        .card-custom {
-            box-shadow: none;
-            border: 1px solid #ddd;
-        }
+        .no-print { display: none !important; }
+        .content-wrapper { margin: 0 !important; padding: 0 !important; }
+        .main-sidebar, .main-header, .main-footer { display: none !important; }
+        .data-card { box-shadow: none; border: 1px solid #ddd; }
+        .summary-box { box-shadow: none; border: 1px solid #ddd; }
     }
 </style>
 
 <div class="container-fluid">
-    <!-- Filter Section -->
-    <div class="filter-section">
+    <!-- Filter -->
+    <div class="filter-card no-print">
         <form method="GET" action="{{ route('laporan.rekap-bulanan') }}">
             <div class="row align-items-end">
-                <div class="col-md-4">
-                    <label><i class="fas fa-calendar"></i> Tahun</label>
-                    <select name="tahun" class="form-select">
+                <div class="col-md-3 mb-2">
+                    <label class="small text-muted mb-1">Tahun</label>
+                    <select name="tahun" class="form-control">
                         @foreach($tahunList as $t)
-                            <option value="{{ $t }}" {{ $tahun == $t ? 'selected' : '' }}>
-                                {{ $t }}
-                            </option>
+                            <option value="{{ $t }}" {{ $tahun == $t ? 'selected' : '' }}>{{ $t }}</option>
                         @endforeach
                         @if(!$tahunList->contains($tahun))
                             <option value="{{ $tahun }}" selected>{{ $tahun }}</option>
                         @endif
                     </select>
                 </div>
-                <div class="col-md-4">
-                    <label><i class="fas fa-box"></i> Filter Barang</label>
-                    <select name="barang_id" class="form-select">
-                        <option value="">-- Semua Barang --</option>
+                <div class="col-md-3 mb-2">
+                    <label class="small text-muted mb-1">Barang</label>
+                    <select name="barang_id" class="form-control">
+                        <option value="">Semua Barang</option>
                         @foreach($barang as $b)
-                            <option value="{{ $b->id }}" {{ $barangId == $b->id ? 'selected' : '' }}>
-                                {{ $b->nama_barang }}
-                            </option>
+                            <option value="{{ $b->id }}" {{ $barangId == $b->id ? 'selected' : '' }}>{{ $b->nama_barang }}</option>
                         @endforeach
                     </select>
                 </div>
-                <div class="col-md-4">
-                    <div class="d-flex gap-2">
-                        <button type="submit" class="btn-filter">
-                            <i class="fas fa-search"></i> Filter
-                        </button>
-                        <a href="{{ route('laporan.rekap-bulanan') }}" class="btn-reset">
-                            <i class="fas fa-undo"></i> Reset
-                        </a>
+                <div class="col-md-3 mb-2">
+                    <div class="form-check mt-2">
+                        <input type="checkbox" name="detail" value="1" class="form-check-input" id="showDetail" {{ request('detail') ? 'checked' : '' }}>
+                        <label class="form-check-label" for="showDetail">Tampilkan Detail Barang</label>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-2">
+                    <div class="btn-group-action">
+                        <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> Tampilkan</button>
+                        <a href="{{ route('laporan.rekap-bulanan') }}" class="btn btn-outline-secondary"><i class="fas fa-redo"></i></a>
+                        <button type="button" onclick="window.print()" class="btn btn-outline-dark"><i class="fas fa-print"></i></button>
                     </div>
                 </div>
             </div>
         </form>
     </div>
 
-    <!-- Statistics Cards -->
-    <div class="row">
-        <div class="col-md-3">
-            <div class="stat-card blue">
-                <p><i class="fas fa-calendar"></i> Tahun</p>
-                <h3>{{ $tahun }}</h3>
-            </div>
+    <!-- Summary -->
+    @php
+        $avgPerBulan = count($rekapBulanan) > 0 ? $totalTahunan / count($rekapBulanan) : 0;
+        $maxMonth = collect($rekapBulanan)->sortByDesc('total_penjualan')->first();
+        $namaBulan = [
+            1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
+            5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
+            9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'
+        ];
+    @endphp
+    <div class="summary-row">
+        <div class="summary-box primary">
+            <div class="label"><i class="fas fa-calendar"></i> Tahun</div>
+            <div class="value">{{ $tahun }}</div>
+            <div class="sub-value">{{ count($rekapBulanan) }} bulan aktif</div>
         </div>
-        <div class="col-md-3">
-            <div class="stat-card green">
-                <p><i class="fas fa-money-bill-wave"></i> Total Penjualan</p>
-                <h3>Rp {{ number_format($totalTahunan, 0, ',', '.') }}</h3>
-            </div>
+        <div class="summary-box success">
+            <div class="label"><i class="fas fa-money-bill-wave"></i> Total Penjualan</div>
+            <div class="value">Rp {{ number_format($totalTahunan, 0, ',', '.') }}</div>
+            <div class="sub-value">{{ number_format($totalTransaksi) }} transaksi</div>
         </div>
-        <div class="col-md-3">
-            <div class="stat-card purple">
-                <p><i class="fas fa-receipt"></i> Total Transaksi</p>
-                <h3>{{ number_format($totalTransaksi) }}</h3>
-            </div>
+        <div class="summary-box warning">
+            <div class="label"><i class="fas fa-chart-line"></i> Rata-rata/Bulan</div>
+            <div class="value">Rp {{ number_format($avgPerBulan, 0, ',', '.') }}</div>
         </div>
-        <div class="col-md-3">
-            <div class="stat-card orange">
-                <p><i class="fas fa-chart-line"></i> Rata-rata / Bulan</p>
-                <h3>Rp {{ count($rekapBulanan) > 0 ? number_format($totalTahunan / count($rekapBulanan), 0, ',', '.') : 0 }}</h3>
+        <div class="summary-box info">
+            <div class="label"><i class="fas fa-trophy"></i> Bulan Tertinggi</div>
+            <div class="value">{{ $maxMonth ? ($maxMonth->nama_bulan ?? $namaBulan[$maxMonth->bulan] ?? '-') : '-' }}</div>
+            @if($maxMonth)
+                <div class="sub-value">Rp {{ number_format($maxMonth->total_penjualan, 0, ',', '.') }}</div>
+            @endif
+        </div>
+    </div>
+
+    <!-- Chart -->
+    @if(count($rekapBulanan) > 0)
+    <div class="data-card">
+        <div class="card-header">
+            <h5><i class="fas fa-chart-bar"></i> Grafik Penjualan Bulanan {{ $tahun }}</h5>
+        </div>
+        <div class="chart-wrapper">
+            @php $maxValue = collect($rekapBulanan)->max('total_penjualan'); @endphp
+            <div class="chart-bar">
+                @foreach($rekapBulanan as $r)
+                @php $height = $maxValue > 0 ? ($r->total_penjualan / $maxValue) * 100 : 0; @endphp
+                <div class="chart-bar-item">
+                    <div class="value-label">{{ number_format($r->total_penjualan / 1000000, 1) }}jt</div>
+                    <div class="bar" style="height: {{ $height }}%"></div>
+                    <div class="month-label">{{ substr($r->nama_bulan ?? $namaBulan[$r->bulan] ?? '-', 0, 3) }}</div>
+                </div>
+                @endforeach
             </div>
         </div>
     </div>
+    @endif
 
     <!-- Data Table -->
-    <div class="card-custom">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <div>
-                <h5 class="mb-0"><i class="fas fa-chart-bar"></i> Rekap Penjualan Per Bulan - Tahun {{ $tahun }}</h5>
-                <small class="text-muted">
-                    @if($barangId)
-                        Filter berdasarkan barang terpilih
-                    @else
-                        Menampilkan semua barang
-                    @endif
-                </small>
-            </div>
-            <button onclick="window.print()" class="btn-print no-print">
-                <i class="fas fa-print"></i> Cetak Laporan
-            </button>
+    <div class="data-card">
+        <div class="card-header">
+            <h5><i class="fas fa-table"></i> Rekap Per Bulan</h5>
+            <small class="text-muted">Tahun {{ $tahun }}</small>
         </div>
-
-        @if(count($rekapBulanan) > 0)
-        <div class="table-responsive">
-            <table>
-                <thead>
-                    <tr>
-                        <th width="5%">No</th>
-                        <th width="20%">Bulan</th>
-                        <th width="15%">Jumlah Transaksi</th>
-                        <th width="25%">Total Penjualan</th>
-                        <th width="35%">Visualisasi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @php
-                        $maxPenjualan = $rekapBulanan->max('total_penjualan') ?: 1;
-                        $monthClasses = [
-                            1 => 'month-jan', 2 => 'month-feb', 3 => 'month-mar', 4 => 'month-apr',
-                            5 => 'month-may', 6 => 'month-jun', 7 => 'month-jul', 8 => 'month-aug',
-                            9 => 'month-sep', 10 => 'month-oct', 11 => 'month-nov', 12 => 'month-dec'
-                        ];
-                    @endphp
-                    @foreach($rekapBulanan as $index => $item)
-                    <tr>
-                        <td>{{ $index + 1 }}</td>
-                        <td>
-                            <span class="month-badge {{ $monthClasses[$item->bulan] ?? 'month-jan' }}">
-                                {{ $item->nama_bulan }} {{ $item->tahun }}
-                            </span>
-                        </td>
-                        <td>
-                            <strong>{{ number_format($item->jumlah_transaksi) }}</strong> transaksi
-                        </td>
-                        <td>
-                            <strong style="color: #059669; font-size: 1.1em;">
-                                Rp {{ number_format($item->total_penjualan, 0, ',', '.') }}
-                            </strong>
-                        </td>
-                        <td>
-                            <div class="progress-bg">
-                                <div class="progress-bar-custom" 
-                                     style="width: {{ ($item->total_penjualan / $maxPenjualan) * 100 }}%">
+        <div class="card-body">
+            @if(count($rekapBulanan) > 0)
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 50px">No</th>
+                            <th>Bulan</th>
+                            <th class="text-center">Jumlah Transaksi</th>
+                            <th class="text-right">Total Penjualan</th>
+                            <th class="text-right">Rata-rata/Transaksi</th>
+                            <th style="width: 150px">Progress</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($rekapBulanan as $index => $r)
+                        @php 
+                            $progress = $maxValue > 0 ? ($r->total_penjualan / $maxValue) * 100 : 0;
+                            $rataRata = $r->jumlah_transaksi > 0 ? $r->total_penjualan / $r->jumlah_transaksi : 0;
+                        @endphp
+                        <tr>
+                            <td class="text-center">{{ $index + 1 }}</td>
+                            <td><span class="month-badge">{{ $r->nama_bulan ?? $namaBulan[$r->bulan] ?? '-' }}</span></td>
+                            <td class="text-center"><strong>{{ number_format($r->jumlah_transaksi) }}</strong></td>
+                            <td class="text-right"><strong>Rp {{ number_format($r->total_penjualan, 0, ',', '.') }}</strong></td>
+                            <td class="text-right">Rp {{ number_format($rataRata, 0, ',', '.') }}</td>
+                            <td>
+                                <div class="progress-mini">
+                                    <div class="bar" style="width: {{ $progress }}%"></div>
                                 </div>
-                            </div>
-                        </td>
-                    </tr>
-                    @endforeach
-                </tbody>
-                <tfoot style="background: #f8fafc; font-weight: bold;">
-                    <tr>
-                        <td colspan="2" style="text-align: right; padding: 16px;">TOTAL {{ $tahun }}:</td>
-                        <td style="padding: 16px;">
-                            <strong>{{ number_format($totalTransaksi) }}</strong> transaksi
-                        </td>
-                        <td style="padding: 16px; color: #059669; font-size: 1.1em;">
-                            Rp {{ number_format($totalTahunan, 0, ',', '.') }}
-                        </td>
-                        <td></td>
-                    </tr>
-                </tfoot>
-            </table>
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="2" class="text-right">TOTAL {{ $tahun }}</td>
+                            <td class="text-center"><strong>{{ number_format($totalTransaksi) }}</strong></td>
+                            <td class="text-right"><strong>Rp {{ number_format($totalTahunan, 0, ',', '.') }}</strong></td>
+                            <td class="text-right">Rp {{ $totalTransaksi > 0 ? number_format($totalTahunan / $totalTransaksi, 0, ',', '.') : 0 }}</td>
+                            <td></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+            @else
+            <div class="empty-state">
+                <i class="fas fa-inbox"></i>
+                <h5>Tidak Ada Data</h5>
+                <p class="text-muted">Tidak ditemukan transaksi pada tahun {{ $tahun }}</p>
+            </div>
+            @endif
         </div>
-        @else
-        <div class="empty-state">
-            <i class="fas fa-inbox"></i>
-            <h5>Tidak Ada Data</h5>
-            <p>Tidak ditemukan transaksi penjualan pada tahun {{ $tahun }}</p>
-        </div>
-        @endif
     </div>
 
-    <!-- Detail per Barang (jika filter barang dipilih) -->
-    @if($barangId && $detailBarang->count() > 0)
-    <div class="card-custom">
-        <h5 class="mb-3"><i class="fas fa-box"></i> Detail Penjualan Barang Per Bulan</h5>
-        <div class="table-responsive">
-            <table>
-                <thead>
-                    <tr>
-                        <th width="5%">No</th>
-                        <th width="20%">Bulan</th>
-                        <th width="30%">Nama Barang</th>
-                        <th width="15%">Total Qty</th>
-                        <th width="30%">Total Nilai</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($detailBarang as $index => $item)
-                    <tr>
-                        <td>{{ $index + 1 }}</td>
-                        <td>
-                            <span class="month-badge {{ $monthClasses[$item->bulan] ?? 'month-jan' }}">
-                                {{ $item->nama_bulan }}
-                            </span>
-                        </td>
-                        <td>{{ $item->nama_barang }}</td>
-                        <td><strong>{{ number_format($item->total_qty) }}</strong></td>
-                        <td>
-                            <strong style="color: #059669;">
-                                Rp {{ number_format($item->total_nilai, 0, ',', '.') }}
-                            </strong>
-                        </td>
-                    </tr>
-                    @endforeach
-                </tbody>
-                <tfoot style="background: #f8fafc; font-weight: bold;">
-                    <tr>
-                        <td colspan="3" style="text-align: right; padding: 16px;">TOTAL:</td>
-                        <td style="padding: 16px;">
-                            <strong>{{ number_format($detailBarang->sum('total_qty')) }}</strong>
-                        </td>
-                        <td style="padding: 16px; color: #059669;">
-                            Rp {{ number_format($detailBarang->sum('total_nilai'), 0, ',', '.') }}
-                        </td>
-                    </tr>
-                </tfoot>
-            </table>
+    <!-- Detail Barang -->
+    @if(request('detail') && $detailBarang->count() > 0)
+    <div class="data-card">
+        <div class="card-header">
+            <h5><i class="fas fa-boxes"></i> Detail Penjualan Per Barang</h5>
+            <small class="text-muted">Tahun {{ $tahun }}</small>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 50px">No</th>
+                            <th>Nama Barang</th>
+                            <th class="text-center">Qty Terjual</th>
+                            <th class="text-right">Total Penjualan</th>
+                            <th class="text-right">Kontribusi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @php $totalDetailPenjualan = $detailBarang->sum('total_penjualan') ?: $detailBarang->sum('total_nilai'); @endphp
+                        @foreach($detailBarang as $index => $d)
+                        @php 
+                            $itemTotal = $d->total_penjualan ?? $d->total_nilai ?? 0;
+                            $kontribusi = $totalDetailPenjualan > 0 ? ($itemTotal / $totalDetailPenjualan) * 100 : 0; 
+                        @endphp
+                        <tr>
+                            <td class="text-center">{{ $index + 1 }}</td>
+                            <td><strong>{{ $d->nama_barang }}</strong></td>
+                            <td class="text-center">{{ number_format($d->qty_terjual ?? $d->total_qty ?? 0) }}</td>
+                            <td class="text-right"><strong>Rp {{ number_format($itemTotal, 0, ',', '.') }}</strong></td>
+                            <td class="text-right">
+                                <span class="kontribusi-badge {{ $kontribusi > 20 ? 'kontribusi-high' : ($kontribusi > 10 ? 'kontribusi-medium' : 'kontribusi-low') }}">
+                                    {{ number_format($kontribusi, 1) }}%
+                                </span>
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    @elseif($barangId && $detailBarang->count() > 0)
+    <div class="data-card">
+        <div class="card-header">
+            <h5><i class="fas fa-box"></i> Detail Penjualan Barang Per Bulan</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 50px">No</th>
+                            <th>Bulan</th>
+                            <th>Nama Barang</th>
+                            <th class="text-center">Qty</th>
+                            <th class="text-right">Total Nilai</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($detailBarang as $index => $item)
+                        <tr>
+                            <td class="text-center">{{ $index + 1 }}</td>
+                            <td><span class="month-badge">{{ $item->nama_bulan ?? $namaBulan[$item->bulan] ?? '-' }}</span></td>
+                            <td><strong>{{ $item->nama_barang }}</strong></td>
+                            <td class="text-center">{{ number_format($item->total_qty ?? $item->qty_terjual ?? 0) }}</td>
+                            <td class="text-right"><strong>Rp {{ number_format($item->total_nilai ?? $item->total_penjualan ?? 0, 0, ',', '.') }}</strong></td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
     @endif
 </div>
-@stop
-
-@section('css')
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
-@stop
-
-@section('js')
-    <script>
-        console.log('Rekap Penjualan Bulanan loaded');
-    </script>
 @stop

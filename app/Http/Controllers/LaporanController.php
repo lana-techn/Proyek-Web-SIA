@@ -45,9 +45,16 @@ class LaporanController extends Controller
             });
         }
         
+        // Clone query untuk menghitung total sebelum pagination
+        $totalQuery = clone $query;
+        $totalPenjualan = $totalQuery->sum(DB::raw('COALESCE(jumlah_pembelian, 0)'));
+        $totalTransaksi = $totalQuery->count();
+        
+        // Pagination - 15 item per halaman
         $penjualan = $query->orderBy('jual.tanggal', 'desc')
             ->orderBy('jual.created_at', 'desc')
-            ->get();
+            ->paginate(15)
+            ->withQueryString();
         
         // Ambil detail untuk setiap transaksi
         foreach ($penjualan as $item) {
@@ -58,15 +65,10 @@ class LaporanController extends Controller
                 ->get();
         }
         
-        // Hitung total
-        $totalPenjualan = $penjualan->sum(function($item) {
-            return $item->jumlah_pembelian ?? $item->total ?? 0;
-        });
-        
         // Ambil daftar barang untuk filter
         $barang = DB::table('barang')->orderBy('nama_barang')->get();
         
-        return view('laporan.penjualan', compact('penjualan', 'barang', 'totalPenjualan'));
+        return view('laporan.penjualan', compact('penjualan', 'barang', 'totalPenjualan', 'totalTransaksi'));
     }
     
     /**
