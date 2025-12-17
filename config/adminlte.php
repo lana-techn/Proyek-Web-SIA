@@ -376,6 +376,19 @@ return [
             'icon' => 'fas fa-fw fa-cash-register',
             'icon_color' => 'green',
         ],
+        ['header' => 'LAPORAN'],
+        [
+            'text' => 'Laporan Penjualan',
+            'url' => 'laporan/penjualan',
+            'icon' => 'fas fa-fw fa-chart-line',
+            'icon_color' => 'purple',
+        ],
+        [
+            'text' => 'Rekap Per Bulan',
+            'url' => 'laporan/rekap-bulanan',
+            'icon' => 'fas fa-fw fa-calendar-alt',
+            'icon_color' => 'orange',
+        ],
         ['header' => 'MASTER DATA'],
         [
             'text' => 'Barang',

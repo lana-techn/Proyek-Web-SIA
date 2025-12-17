@@ -8,6 +8,7 @@ use App\Http\Controllers\DbController;
 use App\Http\Controllers\BukuController;
 use App\Http\Controllers\PenjualanController;
 use App\Http\Controllers\JualController;
+use App\Http\Controllers\LaporanController;
 // use App\Http\Controllers\KataBijakController;
 use App\Http\Controllers\ProdukController;
 // use App\Http\Controllers\SegiEmpatController;
@@ -108,6 +109,10 @@ Route::middleware('auth')->group(function () {
     Route::post('bacaBarang', [JualController::class, 'getBarang']);
     Route::post('jual/simpan', [JualController::class, 'simpan'])->name('jual.simpan');
     Route::get('jual/cetak/{id}', [JualController::class, 'cetak'])->name('jual.cetak');
+    
+    // Laporan Routes
+    Route::get('laporan/penjualan', [LaporanController::class, 'penjualan'])->name('laporan.penjualan');
+    Route::get('laporan/rekap-bulanan', [LaporanController::class, 'rekapBulanan'])->name('laporan.rekap-bulanan');
 });
 
 // Admin Settings Routes
