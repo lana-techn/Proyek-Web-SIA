@@ -6,6 +6,8 @@
 
 Project Laravel ini adalah Sistem Informasi Akademik yang mencakup berbagai fitur manajemen transaksi dan master data. Dibangun dengan Laravel 12.33.0 dan AdminLTE untuk interface yang modern dan responsif.
 
+### ⭐ Jangan Lupa Star!
+
 ## ✨ Fitur Utama
 
 ### 1. **Query Builder Examples**
